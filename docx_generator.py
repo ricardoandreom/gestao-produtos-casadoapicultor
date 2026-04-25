@@ -45,6 +45,81 @@ def add_horizontal_line(doc):
     pPr.append(pBdr)
 
 
+def _carregar_mapping():
+    """Carrega o products_mapping.xlsx e devolve um dict nome_produto -> qt_palete_AM_FR."""
+    from pathlib import Path
+    import pandas as pd
+
+    mapping_path = Path(__file__).parent / "data" / "products_mapping.xlsx"
+    if not mapping_path.exists():
+        return {}
+
+    df = pd.read_excel(str(mapping_path), dtype=str).fillna("")
+    # Normalizar nomes das colunas (remove espaços extra)
+    df.columns = [c.strip() for c in df.columns]
+    # Construir dict: nome_produto (uppercase stripped) -> qt_palete_AM_FR
+    mapping = {}
+    for _, row in df.iterrows():
+        nome = str(row.get("nome_produto", "")).strip().upper()
+        qt   = str(row.get("qt_palete_AM_FR", "")).strip()
+        if nome:
+            mapping[nome] = qt
+    return mapping
+
+
+def _qt_palete(qt_str: str, cliente_tipo: str) -> str:
+    """Extrai a quantidade AM (antes do /) ou FR (depois do /) da string."""
+    if not qt_str:
+        return ""
+    partes = qt_str.split("/")
+    if cliente_tipo == "AM":
+        return partes[0].strip()
+    else:
+        return partes[1].strip() if len(partes) > 1 else partes[0].strip()
+
+
+def gerar_etiquetas(encomenda: dict, caminho_saida: str):
+    """
+    Para cada produto da encomenda escreve:
+        {quantidade_palete} - {nome_produto}
+    A quantidade_palete vem do mapping AM/FR.
+    Sem cabeçalhos, sem decoração — só o conteúdo.
+    """
+    mapping = _carregar_mapping()
+    cliente_tipo = encomenda.get("cliente_tipo", "AM")
+
+    doc = Document()
+    section = doc.sections[0]
+    section.top_margin = Pt(50)
+    section.bottom_margin = Pt(50)
+    section.left_margin = Pt(72)
+    section.right_margin = Pt(72)
+
+    for produto in encomenda["produtos"]:
+        nome_upper = produto["nome"].strip().upper()
+        qt_str = mapping.get(nome_upper, "")
+        qt_palete = _qt_palete(qt_str, cliente_tipo)
+
+        if qt_palete:
+            linha = f"{qt_palete} - {produto['nome']}"
+        else:
+            # Se não encontrar no mapping, omite a quantidade de palete
+            linha = produto["nome"]
+
+        p = doc.add_paragraph()
+        p.paragraph_format.space_before = Pt(0)
+        p.paragraph_format.space_after = Pt(18)
+        run = p.add_run(linha)
+        set_font(run, font_name="Arial Black", size_pt=22, bold=True)
+
+    doc.save(caminho_saida)
+
+
+def gerar_acabamento(encomenda: dict, caminho_saida: str):
+    """Por agora é uma cópia da maquinação."""
+    gerar_documento_word(encomenda, caminho_saida)
+
+
 def gerar_documento_word(encomenda: dict, caminho_saida: str):
     doc = Document()
 
