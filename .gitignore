@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Ambientes virtuais
+venv/
+.venv/
+env/
+.env
+
+# Dados gerados em runtime — não versionar
+data/historico.json
+data/products_mapping.xlsx
+data/historico_encomendas.xlsx
+
+encomendas_docs/
+
+static/
+
+
+# IDEs
+.vscode/
+.idea/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

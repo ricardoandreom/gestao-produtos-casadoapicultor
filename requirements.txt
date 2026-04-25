@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+python-docx
+jinja2
+python-multipart
+openpyxl

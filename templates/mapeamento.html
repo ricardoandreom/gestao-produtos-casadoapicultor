@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Casa do Apicultor — Mapeamento de Produtos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f0e0b; --surface: #1a1916; --surface2: #222118;
+      --border: #2e2c25; --accent: #e8b84b; --accent2: #c9943a;
+      --text: #f0ece0; --muted: #7a776a; --danger: #c0392b;
+      --success: #4caf83; --radius: 10px;
+    }
+    html, body { height: 100%; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+    /* HEADER */
+    header { flex-shrink: 0; padding: 14px 36px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 20px; background: var(--surface); }
+    .logo-img { height: 52px; width: auto; }
+    .logo-divider { width: 1px; height: 36px; background: var(--border); }
+    .logo-text { display: flex; flex-direction: column; gap: 2px; }
+    .logo-name { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800; color: var(--accent); }
+    .logo-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; }
+    .page-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--muted); }
+    .btn-voltar { margin-left: auto; display: flex; align-items: center; gap: 7px; background: none; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-family: 'Inter', sans-serif; font-size: 13px; padding: 7px 16px; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+    .btn-voltar:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* TOAST */
+    #toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--success); color: #000; font-weight: 600; padding: 12px 24px; border-radius: 30px; font-size: 14px; transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1); z-index: 1000; }
+    #toast.error { background: var(--danger); color: #fff; }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* CONTENT AREA */
+    .content { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+
+    /* TOP BAR com filtros e acções */
+    .top-bar { flex-shrink: 0; padding: 18px 36px 0; }
+    .top-bar-row1 { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .top-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; }
+    #pm-contador { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); }
+    .btn-add { background: var(--accent); border: none; border-radius: 8px; color: #000; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800; padding: 8px 18px; cursor: pointer; margin-left: auto; transition: background 0.2s; }
+    .btn-add:hover { background: var(--accent2); }
+
+    /* FILTROS — reutiliza exactamente o mesmo padrão do historico */
+    .filtros-row { display: flex; gap: 8px; align-items: flex-end; padding-bottom: 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    .filtro-item { display: flex; flex-direction: column; gap: 4px; position: relative; }
+    .filtro-lbl { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+    .ms-trigger { display: flex; align-items: center; justify-content: space-between; gap: 4px; background: var(--surface2); border: 1px solid var(--border); border-radius: 7px; color: var(--muted); font-family: 'Inter', sans-serif; font-size: 12px; padding: 6px 8px 6px 10px; cursor: pointer; transition: border-color 0.2s, color 0.2s; white-space: nowrap; text-align: left; min-width: 0; }
+    .ms-trigger:hover { border-color: var(--accent); }
+    .ms-trigger.active { border-color: var(--accent); color: var(--accent); }
+    .ms-trigger-text { overflow: hidden; text-overflow: ellipsis; flex: 1; }
+    .ms-arrow { font-size: 9px; color: var(--muted); flex-shrink: 0; transition: transform 0.15s; }
+    .ms-trigger.open { border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-color: var(--accent); }
+    .ms-trigger.open .ms-arrow { transform: rotate(180deg); }
+    .ms-panel { display: none; position: absolute; top: 100%; left: 0; min-width: 100%; background: var(--surface); border: 1px solid var(--accent); border-top: none; border-radius: 0 0 8px 8px; z-index: 500; box-shadow: 0 8px 24px rgba(0,0,0,0.55); flex-direction: column; max-height: 260px; }
+    .ms-panel.open { display: flex; }
+    .ms-search-wrap { padding: 7px 8px 5px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .ms-search { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 5px; color: var(--text); font-size: 11px; font-family: 'Inter', sans-serif; padding: 4px 8px; outline: none; }
+    .ms-search:focus { border-color: var(--accent); }
+    .ms-list { overflow-y: auto; flex: 1; }
+    .ms-list::-webkit-scrollbar { width: 4px; }
+    .ms-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .ms-opt { display: flex; align-items: center; gap: 8px; padding: 7px 10px; cursor: pointer; font-size: 12px; user-select: none; }
+    .ms-opt:hover { background: rgba(232,184,75,0.08); }
+    .ms-opt input[type="checkbox"] { accent-color: var(--accent); width: 13px; height: 13px; cursor: pointer; flex-shrink: 0; }
+    .ms-opt span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); }
+    .ms-opt.hidden { display: none; }
+    .ms-footer { padding: 5px 10px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+    .ms-footer-btn { background: none; border: none; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; padding: 2px 4px; transition: color 0.15s; color: var(--muted); }
+    .ms-footer-btn:hover { color: var(--accent); }
+    .ms-footer-btn.danger:hover { color: var(--danger); }
+    .btn-limpar-tudo { background: none; border: 1px solid var(--border); border-radius: 7px; color: var(--muted); font-size: 11px; padding: 6px 12px; cursor: pointer; font-family: 'Inter', sans-serif; white-space: nowrap; transition: all 0.2s; height: 31px; }
+    .btn-limpar-tudo:hover { border-color: var(--danger); color: var(--danger); }
+
+    /* larguras dos filtros */
+    .f-nome { width: 220px; } .f-ref { width: 150px; } .f-cat { width: 150px; } .f-qt { width: 120px; } .f-notas { width: 170px; }
+
+    /* TABELA */
+    .tabela-scroll { flex: 1; overflow-y: auto; padding: 0 36px 28px; }
+    .tabela-scroll::-webkit-scrollbar { width: 6px; }
+    .tabela-scroll::-webkit-scrollbar-track { background: transparent; }
+    .tabela-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .tabela-scroll::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead { position: sticky; top: 0; background: var(--bg); z-index: 1; }
+    thead tr { border-bottom: 1px solid var(--border); }
+    th { text-align: left; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); padding: 12px 14px 10px 0; font-weight: 500; }
+    td { padding: 10px 14px 10px 0; border-bottom: 1px solid var(--border); vertical-align: middle; color: var(--text); font-size: 12px; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    tr:last-child td { border-bottom: none; }
+    .pm-ref { font-family: 'DM Mono', monospace; color: var(--accent); font-size: 11px; }
+    .pm-cat { background: rgba(232,184,75,0.1); color: var(--accent); font-family: 'DM Mono', monospace; font-size: 10px; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+    .pm-qt { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+    .pm-notas { font-size: 11px; color: var(--muted); font-style: italic; }
+    .empty-state { text-align: center; padding: 60px 0; color: var(--muted); }
+    .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; }
+
+    /* MODAL */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 2000; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 32px; width: 500px; max-width: 95vw; display: flex; flex-direction: column; gap: 20px; }
+    .modal-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; }
+    .modal-fields { display: flex; flex-direction: column; gap: 14px; }
+    .modal-field { display: flex; flex-direction: column; gap: 5px; }
+    .modal-field label { font-size: 11px; color: var(--muted); font-weight: 500; font-family: 'DM Mono', monospace; letter-spacing: 0.5px; text-transform: uppercase; }
+    .modal-field input { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 13px; padding: 9px 12px; outline: none; transition: border-color 0.2s; }
+    .modal-field input:focus { border-color: var(--accent); }
+    .modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; padding-top: 4px; }
+    .btn-modal-cancel { background: none; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-family: 'Inter', sans-serif; font-size: 13px; padding: 9px 20px; cursor: pointer; transition: all 0.2s; }
+    .btn-modal-cancel:hover { border-color: var(--muted); color: var(--text); }
+    .btn-modal-save { background: var(--accent); border: none; border-radius: 8px; color: #000; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800; padding: 9px 24px; cursor: pointer; transition: background 0.2s; }
+    .btn-modal-save:hover { background: var(--accent2); }
+    .btn-modal-save:disabled { opacity: 0.5; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="/static/logo.png" alt="Casa do Apicultor" class="logo-img"/>
+  <div class="logo-divider"></div>
+  <div class="logo-text">
+    <div class="logo-name">Casa do Apicultor</div>
+    <div class="logo-sub">Gestão de Encomendas</div>
+  </div>
+  <div class="logo-divider"></div>
+  <div class="page-title">🗂 Mapeamento de Produtos</div>
+  <a href="/" class="btn-voltar">← Voltar</a>
+</header>
+
+<div class="content">
+  <div class="top-bar">
+    <div class="top-bar-row1">
+      <div class="top-title">Produtos</div>
+      <div id="pm-contador">— produtos</div>
+      <button class="btn-add" onclick="abrirModal()">+ Novo Produto</button>
+    </div>
+
+    <!-- FILTROS — mesma arquitectura do histórico -->
+    <div class="filtros-row">
+      <!-- Nome -->
+      <div class="filtro-item" id="fi-nome">
+        <span class="filtro-lbl">Nome do Produto</span>
+        <button class="ms-trigger f-nome" id="trig-nome" onclick="msAbrir('nome')">
+          <span class="ms-trigger-text" id="tlbl-nome">Todos</span><span class="ms-arrow">▾</span>
+        </button>
+        <div class="ms-panel" id="pan-nome">
+          <div class="ms-search-wrap"><input class="ms-search" placeholder="Pesquisar…" oninput="msPesquisar('nome',this.value)"/></div>
+          <div class="ms-list" id="lst-nome"></div>
+          <div class="ms-footer">
+            <button class="ms-footer-btn" onclick="msSelectAll('nome')">Sel. todos</button>
+            <button class="ms-footer-btn danger" onclick="msLimpar('nome')">Limpar</button>
+          </div>
+        </div>
+      </div>
+      <!-- Ref -->
+      <div class="filtro-item" id="fi-ref">
+        <span class="filtro-lbl">Ref. Interna</span>
+        <button class="ms-trigger f-ref" id="trig-ref" onclick="msAbrir('ref')">
+          <span class="ms-trigger-text" id="tlbl-ref">Todas</span><span class="ms-arrow">▾</span>
+        </button>
+        <div class="ms-panel" id="pan-ref">
+          <div class="ms-search-wrap"><input class="ms-search" placeholder="Pesquisar…" oninput="msPesquisar('ref',this.value)"/></div>
+          <div class="ms-list" id="lst-ref"></div>
+          <div class="ms-footer">
+            <button class="ms-footer-btn" onclick="msSelectAll('ref')">Sel. todos</button>
+            <button class="ms-footer-btn danger" onclick="msLimpar('ref')">Limpar</button>
+          </div>
+        </div>
+      </div>
+      <!-- Categoria -->
+      <div class="filtro-item" id="fi-cat">
+        <span class="filtro-lbl">Categoria</span>
+        <button class="ms-trigger f-cat" id="trig-cat" onclick="msAbrir('cat')">
+          <span class="ms-trigger-text" id="tlbl-cat">Todas</span><span class="ms-arrow">▾</span>
+        </button>
+        <div class="ms-panel" id="pan-cat">
+          <div class="ms-search-wrap"><input class="ms-search" placeholder="Pesquisar…" oninput="msPesquisar('cat',this.value)"/></div>
+          <div class="ms-list" id="lst-cat"></div>
+          <div class="ms-footer">
+            <button class="ms-footer-btn" onclick="msSelectAll('cat')">Sel. todos</button>
+            <button class="ms-footer-btn danger" onclick="msLimpar('cat')">Limpar</button>
+          </div>
+        </div>
+      </div>
+      <!-- Qt Palete -->
+      <div class="filtro-item" id="fi-qt">
+        <span class="filtro-lbl">Qt. Palete AM/FR</span>
+        <button class="ms-trigger f-qt" id="trig-qt" onclick="msAbrir('qt')">
+          <span class="ms-trigger-text" id="tlbl-qt">Todas</span><span class="ms-arrow">▾</span>
+        </button>
+        <div class="ms-panel" id="pan-qt">
+          <div class="ms-search-wrap"><input class="ms-search" placeholder="Pesquisar…" oninput="msPesquisar('qt',this.value)"/></div>
+          <div class="ms-list" id="lst-qt"></div>
+          <div class="ms-footer">
+            <button class="ms-footer-btn" onclick="msSelectAll('qt')">Sel. todos</button>
+            <button class="ms-footer-btn danger" onclick="msLimpar('qt')">Limpar</button>
+          </div>
+        </div>
+      </div>
+      <!-- Notas -->
+      <div class="filtro-item" id="fi-notas">
+        <span class="filtro-lbl">Notas</span>
+        <button class="ms-trigger f-notas" id="trig-notas" onclick="msAbrir('notas')">
+          <span class="ms-trigger-text" id="tlbl-notas">Todas</span><span class="ms-arrow">▾</span>
+        </button>
+        <div class="ms-panel" id="pan-notas">
+          <div class="ms-search-wrap"><input class="ms-search" placeholder="Pesquisar…" oninput="msPesquisar('notas',this.value)"/></div>
+          <div class="ms-list" id="lst-notas"></div>
+          <div class="ms-footer">
+            <button class="ms-footer-btn" onclick="msSelectAll('notas')">Sel. todos</button>
+            <button class="ms-footer-btn danger" onclick="msLimpar('notas')">Limpar</button>
+          </div>
+        </div>
+      </div>
+      <button class="btn-limpar-tudo" onclick="msSelecionarTudo()">✓ Selecionar tudo</button>
+      <button class="btn-limpar-tudo" onclick="msLimparTudo()">✕ Limpar tudo</button>
+    </div>
+  </div>
+
+  <div class="tabela-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Nome do Produto</th>
+          <th>Ref. Interna</th>
+          <th>Categoria</th>
+          <th>Qt. Palete AM/FR</th>
+          <th>Notas</th>
+        </tr>
+      </thead>
+      <tbody id="pm-tbody"></tbody>
+    </table>
+    <div class="empty-state" id="empty-state" style="display:none;">
+      <div class="icon">🗂</div><p>Nenhum produto encontrado.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Novo Produto -->
+<div class="modal-overlay" id="modal-produto" onclick="if(event.target===this)fecharModal()">
+  <div class="modal-box">
+    <div class="modal-title">Novo Produto</div>
+    <div class="modal-fields">
+      <div class="modal-field">
+        <label>Nome do Produto</label>
+        <input type="text" id="mp-nome" placeholder="Ex: NINHO DT 12 ECONOMICO S/QUADROS"/>
+      </div>
+      <div class="modal-row">
+        <div class="modal-field">
+          <label>Ref. Interna</label>
+          <input type="text" id="mp-ref" placeholder="Ex: 3 A 12ECO"/>
+        </div>
+        <div class="modal-field">
+          <label>Categoria</label>
+          <input type="text" id="mp-cat" placeholder="Ex: CAIXAS"/>
+        </div>
+      </div>
+      <div class="modal-row">
+        <div class="modal-field">
+          <label>Qt. Palete AM/FR</label>
+          <input type="text" id="mp-qt" placeholder="Ex: 32/32"/>
+        </div>
+        <div class="modal-field">
+          <label>Notas</label>
+          <input type="text" id="mp-notas" placeholder="Ex: LEVA REGUA 10"/>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-modal-save" id="btn-save" onclick="guardarProduto()">Guardar Produto</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script>
+'use strict';
+
+let todosProdutos = [];
+
+// ── MULTISELECT — mesmo padrão do historico ─────────
+const CAMPOS = ['nome','ref','cat','qt','notas'];
+const msOpcoes = { nome:[], ref:[], cat:[], qt:[], notas:[] };
+
+function msGetValores(campo) {
+  const s = new Set();
+  todosProdutos.forEach(p => {
+    if      (campo === 'nome')  s.add(p.nome_produto || '');
+    else if (campo === 'ref')   s.add(p.ref_interna || '');
+    else if (campo === 'cat')   s.add(p.categoria_produto || '');
+    else if (campo === 'qt')    s.add(p.qt_palete_AM_FR || '');
+    else if (campo === 'notas') s.add(p.notas || '');
+  });
+  return [...s].filter(v => v !== '').sort((a,b) => a.localeCompare(b, 'pt'));
+}
+
+function msInicializar(campo) {
+  const valores = msGetValores(campo);
+  const lst = document.getElementById('lst-' + campo);
+  lst.innerHTML = '';
+  msOpcoes[campo] = [];
+
+  // Adicionar opção "(vazio)" se existirem registos sem valor neste campo
+  const temVazios = todosProdutos.some(p => {
+    if (campo === 'nome')  return !p.nome_produto;
+    if (campo === 'ref')   return !p.ref_interna;
+    if (campo === 'cat')   return !p.categoria_produto;
+    if (campo === 'qt')    return !p.qt_palete_AM_FR;
+    if (campo === 'notas') return !p.notas;
+  });
+
+  const todasEntradas = temVazios ? ['(vazio)', ...valores] : valores;
+
+  todasEntradas.forEach(val => {
+    const entry = { val, checked: true };
+    msOpcoes[campo].push(entry);
+    const div = document.createElement('div');
+    div.className = 'ms-opt';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.checked = true;
+    cb.addEventListener('change', () => { entry.checked = cb.checked; msAtualizarLabel(campo); aplicarFiltros(); });
+    const span = document.createElement('span');
+    span.textContent = val; span.title = val;
+    div.appendChild(cb); div.appendChild(span);
+    lst.appendChild(div);
+  });
+  msAtualizarLabel(campo);
+}
+
+function msPesquisar(campo, q) {
+  const lq = q.toLowerCase();
+  document.querySelectorAll(`#lst-${campo} .ms-opt`).forEach(d =>
+    d.classList.toggle('hidden', !d.querySelector('span').textContent.toLowerCase().includes(lq)));
+}
+
+function msAbrir(campo) {
+  const isOpen = document.getElementById('pan-' + campo).classList.contains('open');
+  CAMPOS.forEach(c => {
+    document.getElementById('pan-' + c).classList.remove('open');
+    document.getElementById('trig-' + c).classList.remove('open');
+    const si = document.querySelector(`#pan-${c} .ms-search`);
+    if (si) { si.value = ''; msPesquisar(c, ''); }
+  });
+  if (!isOpen) {
+    document.getElementById('pan-' + campo).classList.add('open');
+    document.getElementById('trig-' + campo).classList.add('open');
+    const si = document.querySelector(`#pan-${campo} .ms-search`);
+    if (si) setTimeout(() => si.focus(), 40);
+  }
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.filtro-item')) {
+    CAMPOS.forEach(c => {
+      document.getElementById('pan-' + c)?.classList.remove('open');
+      document.getElementById('trig-' + c)?.classList.remove('open');
+    });
+  }
+});
+
+function msSelectAll(campo) {
+  msOpcoes[campo].forEach(e => e.checked = true);
+  document.querySelectorAll(`#lst-${campo} .ms-opt input`).forEach(cb => cb.checked = true);
+  msAtualizarLabel(campo); aplicarFiltros();
+}
+
+function msLimpar(campo) {
+  msOpcoes[campo].forEach(e => e.checked = false);
+  document.querySelectorAll(`#lst-${campo} .ms-opt input`).forEach(cb => cb.checked = false);
+  msAtualizarLabel(campo); aplicarFiltros();
+}
+
+function msLimparTudo() { CAMPOS.forEach(c => msLimpar(c)); }
+function msSelecionarTudo() { CAMPOS.forEach(c => msSelectAll(c)); }
+
+function msAtualizarLabel(campo) {
+  const sel = msOpcoes[campo].filter(e => e.checked);
+  const tot = msOpcoes[campo].length;
+  const lbl = document.getElementById('tlbl-' + campo);
+  const trig = document.getElementById('trig-' + campo);
+  if (sel.length === 0) { lbl.textContent = '(nenhum)'; trig.classList.add('active'); }
+  else if (sel.length === tot) { lbl.textContent = 'Todos'; trig.classList.remove('active'); }
+  else if (sel.length === 1) { lbl.textContent = sel[0].val; trig.classList.add('active'); }
+  else { lbl.textContent = `${sel.length} selecionados`; trig.classList.add('active'); }
+}
+
+// ── FILTROS + RENDER ───────────────────────────────
+function getValCampo(p, campo) {
+  if (campo === 'nome')  return p.nome_produto || '';
+  if (campo === 'ref')   return p.ref_interna || '';
+  if (campo === 'cat')   return p.categoria_produto || '';
+  if (campo === 'qt')    return p.qt_palete_AM_FR || '';
+  if (campo === 'notas') return p.notas || '';
+  return '';
+}
+
+function aplicarFiltros() {
+  const pass = {};
+  CAMPOS.forEach(c => { pass[c] = new Set(msOpcoes[c].filter(e => e.checked).map(e => e.val)); });
+
+  const filtrados = todosProdutos.filter(p => {
+    return CAMPOS.every(c => {
+      const val = getValCampo(p, c) || '';
+      const chave = val === '' ? '(vazio)' : val;
+      return pass[c].has(chave);
+    });
+  });
+
+  renderTabela(filtrados);
+}
+
+function renderTabela(lista) {
+  const tbody = document.getElementById('pm-tbody');
+  const empty = document.getElementById('empty-state');
+  const contador = document.getElementById('pm-contador');
+  const total = todosProdutos.length;
+  const vis = lista.length;
+  contador.textContent = (vis < total && total > 0)
+    ? `${vis} de ${total} produto${total !== 1 ? 's' : ''}`
+    : `${total} produto${total !== 1 ? 's' : ''}`;
+  empty.style.display = vis === 0 ? 'block' : 'none';
+  tbody.innerHTML = '';
+  lista.forEach(p => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="max-width:300px;white-space:normal;line-height:1.4;">${p.nome_produto || '—'}</td>
+      <td><span class="pm-ref">${p.ref_interna || '—'}</span></td>
+      <td>${p.categoria_produto ? `<span class="pm-cat">${p.categoria_produto}</span>` : '—'}</td>
+      <td><span class="pm-qt">${p.qt_palete_AM_FR || '—'}</span></td>
+      <td><span class="pm-notas">${p.notas || ''}</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// ── API ────────────────────────────────────────────
+async function carregarProdutos() {
+  const res = await fetch('/api/produtos');
+  todosProdutos = await res.json();
+  CAMPOS.forEach(c => msInicializar(c));
+  aplicarFiltros();
+}
+
+// ── MODAL ──────────────────────────────────────────
+function abrirModal() {
+  ['mp-nome','mp-ref','mp-cat','mp-qt','mp-notas'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('modal-produto').classList.add('open');
+  document.getElementById('mp-nome').focus();
+}
+
+function fecharModal() {
+  document.getElementById('modal-produto').classList.remove('open');
+}
+
+async function guardarProduto() {
+  const nome  = document.getElementById('mp-nome').value.trim();
+  const ref   = document.getElementById('mp-ref').value.trim();
+  const cat   = document.getElementById('mp-cat').value.trim();
+  const qt    = document.getElementById('mp-qt').value.trim();
+  const notas = document.getElementById('mp-notas').value.trim();
+
+  if (!nome) { toast('Preenche o nome do produto.', true); return; }
+  if (!ref)  { toast('Preenche a referência interna.', true); return; }
+
+  const btn = document.getElementById('btn-save');
+  btn.disabled = true; btn.textContent = 'A guardar…';
+  try {
+    const res = await fetch('/api/produtos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome_produto: nome, ref_interna: ref, categoria_produto: cat, qt_palete_AM_FR: qt, notas })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Erro desconhecido.');
+    fecharModal();
+    toast(data.mensagem);
+    await carregarProdutos();
+  } catch(e) { toast(e.message, true); }
+  finally { btn.disabled = false; btn.textContent = 'Guardar Produto'; }
+}
+
+function toast(msg, erro = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = erro ? 'error show' : 'show';
+  setTimeout(() => { t.className = erro ? 'error' : ''; }, 3000);
+}
+
+carregarProdutos();
+</script>
+</body>
+</html>
