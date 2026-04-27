@@ -95,6 +95,11 @@
     .pm-cat { background: rgba(232,184,75,0.1); color: var(--accent); font-family: 'DM Mono', monospace; font-size: 10px; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
     .pm-qt { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
     .pm-notas { font-size: 11px; color: var(--muted); font-style: italic; }
+    .btn-acao { background: none; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; padding: 5px 9px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
+    .btn-edit { color: var(--muted); }
+    .btn-edit:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-delete { color: var(--muted); }
+    .btn-delete:hover { border-color: var(--danger); color: var(--danger); }
     .empty-state { text-align: center; padding: 60px 0; color: var(--muted); }
     .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
     .empty-state p { font-size: 14px; }
@@ -231,6 +236,7 @@
           <th>Categoria</th>
           <th>Qt. Palete AM/FR</th>
           <th>Notas</th>
+          <th>Ações</th>
         </tr>
       </thead>
       <tbody id="pm-tbody"></tbody>
@@ -244,7 +250,7 @@
 <!-- Modal Novo Produto -->
 <div class="modal-overlay" id="modal-produto" onclick="if(event.target===this)fecharModal()">
   <div class="modal-box">
-    <div class="modal-title">Novo Produto</div>
+    <div class="modal-title" id="modal-title-text">Novo Produto</div>
     <div class="modal-fields">
       <div class="modal-field">
         <label>Nome do Produto</label>
@@ -428,12 +434,20 @@ function renderTabela(lista) {
   tbody.innerHTML = '';
   lista.forEach(p => {
     const tr = document.createElement('tr');
+    const dadosEscapados = JSON.stringify(p).replace(/'/g, "\\'");
+    const refEscapada = (p.ref_interna || '').replace(/'/g, "\\'");
     tr.innerHTML = `
       <td style="max-width:300px;white-space:normal;line-height:1.4;">${p.nome_produto || '—'}</td>
       <td><span class="pm-ref">${p.ref_interna || '—'}</span></td>
       <td>${p.categoria_produto ? `<span class="pm-cat">${p.categoria_produto}</span>` : '—'}</td>
       <td><span class="pm-qt">${p.qt_palete_AM_FR || '—'}</span></td>
       <td><span class="pm-notas">${p.notas || ''}</span></td>
+      <td>
+        <div style="display:flex;gap:6px;">
+          <button class="btn-acao btn-edit" onclick='abrirModalEditar(${dadosEscapados})'>✏️</button>
+          <button class="btn-acao btn-delete" onclick="confirmarApagar('${refEscapada}')">🗑️</button>
+        </div>
+      </td>
     `;
     tbody.appendChild(tr);
   });
@@ -448,14 +462,34 @@ async function carregarProdutos() {
 }
 
 // ── MODAL ──────────────────────────────────────────
+// `refOriginal` é null quando estamos a criar, ou tem o valor da
+// ref_interna original quando estamos a editar (necessário porque
+// o utilizador pode mudar a ref_interna durante a edição).
+let refOriginal = null;
+
 function abrirModal() {
+  refOriginal = null;
+  document.getElementById('modal-title-text').textContent = 'Novo Produto';
   ['mp-nome','mp-ref','mp-cat','mp-qt','mp-notas'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('modal-produto').classList.add('open');
+  document.getElementById('mp-nome').focus();
+}
+
+function abrirModalEditar(p) {
+  refOriginal = p.ref_interna;
+  document.getElementById('modal-title-text').textContent = 'Editar Produto';
+  document.getElementById('mp-nome').value  = p.nome_produto || '';
+  document.getElementById('mp-ref').value   = p.ref_interna || '';
+  document.getElementById('mp-cat').value   = p.categoria_produto || '';
+  document.getElementById('mp-qt').value    = p.qt_palete_AM_FR || '';
+  document.getElementById('mp-notas').value = p.notas || '';
   document.getElementById('modal-produto').classList.add('open');
   document.getElementById('mp-nome').focus();
 }
 
 function fecharModal() {
   document.getElementById('modal-produto').classList.remove('open');
+  refOriginal = null;
 }
 
 async function guardarProduto() {
@@ -470,19 +504,42 @@ async function guardarProduto() {
 
   const btn = document.getElementById('btn-save');
   btn.disabled = true; btn.textContent = 'A guardar…';
+
+  // Decidir entre criar (POST) ou editar (PUT)
+  const isEdit = refOriginal !== null;
+  const url    = isEdit ? `/api/produtos/${encodeURIComponent(refOriginal)}` : '/api/produtos';
+  const method = isEdit ? 'PUT' : 'POST';
+
   try {
-    const res = await fetch('/api/produtos', {
-      method: 'POST',
+    const res = await fetch(url, {
+      method,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ nome_produto: nome, ref_interna: ref, categoria_produto: cat, qt_palete_AM_FR: qt, notas })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || 'Erro desconhecido.');
+    toast(data.mensagem || (isEdit ? 'Produto atualizado!' : 'Produto adicionado!'));
     fecharModal();
-    toast(data.mensagem);
     await carregarProdutos();
-  } catch(e) { toast(e.message, true); }
-  finally { btn.disabled = false; btn.textContent = 'Guardar Produto'; }
+  } catch (err) {
+    toast(err.message || 'Erro ao guardar.', true);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Guardar Produto';
+  }
+}
+
+async function confirmarApagar(refInterna) {
+  const ok = confirm(`Apagar o produto com referência "${refInterna}"?\n\nEsta ação não pode ser desfeita.`);
+  if (!ok) return;
+  try {
+    const res = await fetch(`/api/produtos/${encodeURIComponent(refInterna)}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Erro ao apagar.');
+    toast(data.mensagem || 'Produto apagado!');
+    await carregarProdutos();
+  } catch (err) {
+    toast(err.message || 'Erro ao apagar.', true);
+  }
 }
 
 function toast(msg, erro = false) {

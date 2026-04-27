@@ -1,38 +1,116 @@
+# =============================================================================
 # Python
+# =============================================================================
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
-.Python
+*$py.class
+*.so
+*.egg
 *.egg-info/
-dist/
+.Python
 build/
+dist/
+develop-eggs/
+downloads/
+eggs/
 .eggs/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
 
+# =============================================================================
 # Ambientes virtuais
+# =============================================================================
 venv/
-.venv/
 env/
+ENV/
+.venv/
 .env
+.env.local
+.env.*.local
 
-# Dados gerados em runtime — não versionar
-data/historico.json
-data/products_mapping.xlsx
-data/historico_encomendas.xlsx
-
-encomendas_docs/
-
-static/
-
-
-# IDEs
+# =============================================================================
+# Editores / IDEs
+# =============================================================================
 .vscode/
 .idea/
-*.code-workspace
+*.swp
+*.swo
+*~
+.project
+.pydevproject
 
-# OS
-.DS_Store
+# =============================================================================
+# Sistemas operativos
+# =============================================================================
+# Windows
 Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
 
-# Logs
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+.fuse_hidden*
+.Trash-*
+
+# =============================================================================
+# Específico deste projeto
+# =============================================================================
+
+# Dados (cada instalação tem os seus)
+data/historico.json
+data/historico_encomendas.xlsx
+data/products_mapping.xlsx
+data/products_mapping.XLSX
+
+# Documentos Word gerados (são output, não código)
+encomendas_docs/
+
+# Backups criados pelos scripts utilitários
+data/*.bak
+data/*.bak2
+*.bak
+*.bak2
+
+# =============================================================================
+# Logs e temporários
+# =============================================================================
 *.log
+logs/
+*.tmp
+*.temp
+
+# =============================================================================
+# Testes (caso venham a existir)
+# =============================================================================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# =============================================================================
+# Type checking / Linting
+# =============================================================================
+.mypy_cache/
+.ruff_cache/
+.pyre/

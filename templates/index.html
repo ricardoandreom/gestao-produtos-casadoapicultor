@@ -140,12 +140,42 @@
     .badge-tipo { display: inline-block; padding: 3px 9px; border-radius: 20px; font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; }
     .badge-AM { background: rgba(232,184,75,0.15); color: var(--accent); }
     .badge-FR { background: rgba(76,175,131,0.15); color: var(--success); }
+    .badge-OUTRO { background: rgba(150,150,160,0.18); color: #b8b8c0; }
     .produtos-cell { display: flex; flex-direction: column; gap: 3px; }
     .produto-tag { font-size: 12px; color: var(--muted); }
     .produto-tag strong { color: var(--text); font-weight: 500; }
     .produto-tag-nota { font-size: 11px; color: var(--muted); font-style: italic; padding-left: 2px; }
     .btn-download { background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--muted); font-size: 12px; padding: 6px 12px; cursor: pointer; font-family: 'Inter', sans-serif; white-space: nowrap; transition: all 0.2s; }
     .btn-download:hover { border-color: var(--accent); color: var(--accent); }
+
+    .btn-acao { background: none; border: 1px solid var(--border); border-radius: 6px; font-size: 12px; padding: 6px 12px; cursor: pointer; font-family: 'Inter', sans-serif; white-space: nowrap; transition: all 0.2s; }
+    .btn-edit { color: var(--muted); }
+    .btn-edit:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-delete { color: var(--muted); }
+    .btn-delete:hover { border-color: var(--danger); color: var(--danger); }
+
+    /* Modal de edição (mesmo estilo do mapeamento) */
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:2000; align-items:center; justify-content:center; }
+    .modal-overlay.open { display:flex; }
+    .modal-box { background: var(--surface); border:1px solid var(--border); border-radius: var(--radius); padding: 28px; width: min(640px, 92vw); max-height: 88vh; overflow-y: auto; }
+    .modal-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 20px; }
+    .modal-field { display:flex; flex-direction:column; gap:6px; margin-bottom: 14px; }
+    .modal-field label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .modal-field input, .modal-field select { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; }
+    .modal-field input:focus, .modal-field select:focus { outline: none; border-color: var(--accent); }
+    .modal-actions { display:flex; gap:10px; justify-content:flex-end; margin-top: 18px; }
+    .btn-modal-cancel { background: none; border: 1px solid var(--border); color: var(--muted); padding: 10px 18px; border-radius: 8px; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px; }
+    .btn-modal-cancel:hover { color: var(--text); border-color: var(--text); }
+    .btn-modal-save { background: var(--accent); border: none; color: #000; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 14px; }
+    .btn-modal-save:disabled { opacity: 0.6; cursor: wait; }
+    .modal-produto-row { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; align-items: end; margin-bottom: 10px; }
+    .modal-produto-row .btn-remove { background: none; border: 1px solid var(--border); color: var(--muted); padding: 10px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; }
+    .modal-produto-row .btn-remove:hover { color: var(--danger); border-color: var(--danger); }
+    .btn-add-prod { background: none; border: 1px dashed var(--border); color: var(--muted); padding: 10px; border-radius: 8px; cursor: pointer; width: 100%; font-family: 'Inter', sans-serif; font-size: 13px; }
+    .btn-add-prod:hover { color: var(--accent); border-color: var(--accent); }
+    .modal-tipo-row { display: flex; gap: 8px; }
+    .modal-tipo-btn { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface2); color: var(--muted); font-family: 'Syne', sans-serif; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.2s; }
+    .modal-tipo-btn.active { border-color: var(--accent); background: rgba(232,184,75,0.12); color: var(--accent); }
     .btn-excel { background: rgba(76,175,131,0.1); border: 1px solid rgba(76,175,131,0.3); border-radius: 6px; color: var(--success); font-size: 12px; font-weight: 600; padding: 6px 14px; cursor: pointer; font-family: 'Inter', sans-serif; white-space: nowrap; transition: all 0.2s; }
     .btn-excel:hover { background: rgba(76,175,131,0.2); border-color: var(--success); }
     .btn-toggle-chart { background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--muted); font-size: 12px; padding: 6px 12px; cursor: pointer; font-family: 'Inter', sans-serif; white-space: nowrap; transition: all 0.2s; }
@@ -209,6 +239,7 @@
           <div class="tipo-group">
             <div class="tipo-btn active" data-tipo="AM" onclick="selecionarTipo('AM')">AM</div>
             <div class="tipo-btn" data-tipo="FR" onclick="selecionarTipo('FR')">FR</div>
+            <div class="tipo-btn" data-tipo="OUTRO" onclick="selecionarTipo('OUTRO')">OUTRO</div>
           </div>
         </div>
       </div>
@@ -320,7 +351,7 @@
 
     <div class="tabela-scroll">
       <table>
-        <thead><tr><th>#</th><th>Data</th><th>Cliente</th><th>Tipo</th><th>Produtos</th><th>Doc</th></tr></thead>
+        <thead><tr><th>#</th><th>Data</th><th>Cliente</th><th>Tipo</th><th>Produtos</th><th>Doc</th><th>Ações</th></tr></thead>
         <tbody id="tabela-body"></tbody>
       </table>
       <div class="empty-state" id="empty-state" style="display:none;">
@@ -519,6 +550,34 @@
       <div class="gb-empty" id="gempty4">Sem dados suficientes.</div>
     </div>
 
+  </div>
+</div>
+
+<!-- Modal de edição de encomenda -->
+<div class="modal-overlay" id="modal-editar" onclick="if(event.target===this)fecharModalEditar()">
+  <div class="modal-box">
+    <div class="modal-title">Editar Encomenda <span id="me-id" style="color:var(--muted);font-size:14px;font-weight:400;"></span></div>
+    <div class="modal-field">
+      <label>Cliente</label>
+      <input type="text" id="me-cliente" />
+    </div>
+    <div class="modal-field">
+      <label>Tipo de Cliente</label>
+      <div class="modal-tipo-row">
+        <div class="modal-tipo-btn" data-tipo="AM" onclick="meSelecionarTipo('AM')">AM</div>
+        <div class="modal-tipo-btn" data-tipo="FR" onclick="meSelecionarTipo('FR')">FR</div>
+        <div class="modal-tipo-btn" data-tipo="OUTRO" onclick="meSelecionarTipo('OUTRO')">OUTRO</div>
+      </div>
+    </div>
+    <div class="modal-field">
+      <label>Produtos</label>
+      <div id="me-produtos"></div>
+      <button class="btn-add-prod" onclick="meAdicionarProduto()">+ Adicionar produto</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="fecharModalEditar()">Cancelar</button>
+      <button class="btn-modal-save" id="me-btn-save" onclick="guardarEdicao()">Guardar Alterações</button>
+    </div>
   </div>
 </div>
 
@@ -771,6 +830,12 @@ function renderTabela(encomendas) {
           <button class="btn-download" onclick="downloadDoc(${e.id},'acabamento')" title="Acabamento">⬇ Acabamento</button>
         </div>
       </td>
+      <td>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <button class="btn-acao btn-edit" onclick='abrirModalEditar(${JSON.stringify(e).replace(/'/g, "\\'")})'>✏️ Editar</button>
+          <button class="btn-acao btn-delete" onclick="confirmarApagar(${e.id}, '${(e.cliente || '').replace(/'/g, "\\'")}')">🗑️ Apagar</button>
+        </div>
+      </td>
     `;
     tbody.appendChild(tr);
   });
@@ -787,6 +852,102 @@ async function carregarHistorico() {
 
 async function downloadDoc(id, tipo) { window.open(`/api/encomendas/${id}/download/${tipo}`, '_blank'); }
 function exportarExcel() { window.open('/api/exportar-excel', '_blank'); }
+
+// ── EDITAR / APAGAR ENCOMENDA ─────────────────────────
+let meEncomendaId = null;
+let meTipoSelecionado = 'AM';
+
+function abrirModalEditar(enc) {
+  meEncomendaId = enc.id;
+  document.getElementById('me-id').textContent = `#${String(enc.id).padStart(4,'0')}`;
+  document.getElementById('me-cliente').value = enc.cliente || '';
+  meSelecionarTipo(enc.cliente_tipo || 'AM');
+
+  // Reconstruir lista de produtos
+  document.getElementById('me-produtos').innerHTML = '';
+  (enc.produtos || []).forEach(p => meAdicionarProduto(p));
+  if (!enc.produtos || !enc.produtos.length) meAdicionarProduto();
+
+  document.getElementById('modal-editar').classList.add('open');
+}
+
+function fecharModalEditar() {
+  document.getElementById('modal-editar').classList.remove('open');
+  meEncomendaId = null;
+}
+
+function meSelecionarTipo(tipo) {
+  meTipoSelecionado = tipo;
+  document.querySelectorAll('#modal-editar .modal-tipo-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tipo === tipo);
+  });
+}
+
+function meAdicionarProduto(p) {
+  const wrapper = document.getElementById('me-produtos');
+  const row = document.createElement('div');
+  row.className = 'modal-produto-row';
+  row.innerHTML = `
+    <input type="text" placeholder="Nome do produto" class="me-prod-nome" value="${(p?.nome || '').replace(/"/g, '&quot;')}" />
+    <input type="number" placeholder="Qt" min="1" class="me-prod-qt" value="${p?.quantidade || 1}" />
+    <input type="text" placeholder="Notas (opcional)" class="me-prod-notas" value="${(p?.notas || '').replace(/"/g, '&quot;')}" />
+    <button class="btn-remove" onclick="this.parentElement.remove()" title="Remover">✕</button>
+  `;
+  wrapper.appendChild(row);
+}
+
+async function guardarEdicao() {
+  if (meEncomendaId === null) return;
+
+  const cliente = document.getElementById('me-cliente').value.trim();
+  if (!cliente) return toast('Preenche o nome do cliente.', true);
+
+  const rows = document.querySelectorAll('#me-produtos .modal-produto-row');
+  const produtos = [];
+  for (const r of rows) {
+    const nome = r.querySelector('.me-prod-nome').value.trim();
+    const qt = parseInt(r.querySelector('.me-prod-qt').value, 10);
+    const notas = r.querySelector('.me-prod-notas').value.trim();
+    if (!nome) return toast('Preenche o nome de todos os produtos.', true);
+    if (!qt || qt < 1) return toast('A quantidade deve ser pelo menos 1.', true);
+    produtos.push({ nome, quantidade: qt, notas });
+  }
+  if (!produtos.length) return toast('A encomenda precisa de pelo menos um produto.', true);
+
+  const btn = document.getElementById('me-btn-save');
+  btn.disabled = true; btn.textContent = 'A guardar…';
+  try {
+    const res = await fetch(`/api/encomendas/${meEncomendaId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cliente, cliente_tipo: meTipoSelecionado, produtos }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Erro desconhecido.');
+    toast(data.mensagem || 'Encomenda atualizada!');
+    fecharModalEditar();
+    await carregarHistorico();
+  } catch (err) {
+    toast(err.message || 'Erro ao guardar.', true);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Guardar Alterações';
+  }
+}
+
+async function confirmarApagar(id, cliente) {
+  const ok = confirm(`Apagar a encomenda #${String(id).padStart(4,'0')} do cliente "${cliente}"?\n\nEsta ação remove a encomenda do histórico e apaga os 3 documentos Word do disco. Não pode ser desfeita.`);
+  if (!ok) return;
+
+  try {
+    const res = await fetch(`/api/encomendas/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Erro ao apagar.');
+    toast(data.mensagem || 'Encomenda apagada!');
+    await carregarHistorico();
+  } catch (err) {
+    toast(err.message || 'Erro ao apagar.', true);
+  }
+}
 
 function toast(msg, erro = false) {
   const t = document.getElementById('toast');
