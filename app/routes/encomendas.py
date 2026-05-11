@@ -8,6 +8,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from app import config
 from app.models import EncomendaRequest
 from app.services import historico as historico_service
+from app.services import produtos as produtos_service
 
 
 router = APIRouter(prefix="/api/encomendas", tags=["encomendas"])
@@ -29,6 +30,18 @@ def _validar_payload(encomenda: EncomendaRequest):
         )
 
 
+def _avisos_mapping(produtos) -> list:
+    """Devolve lista de strings com avisos sobre produtos em falta no mapping."""
+    nomes = [p.nome for p in produtos]
+    resultado = produtos_service.verificar_produtos(nomes)
+    avisos = []
+    for nome in resultado["sem_mapeamento"]:
+        avisos.append(f"'{nome}' não existe no products_mapping.xlsx.")
+    for nome in resultado["sem_qt_palete"]:
+        avisos.append(f"'{nome}' existe no mapping mas não tem qt_palete definida.")
+    return avisos
+
+
 @router.post("")
 async def criar_encomenda(encomenda: EncomendaRequest):
     _validar_payload(encomenda)
@@ -46,6 +59,7 @@ async def criar_encomenda(encomenda: EncomendaRequest):
         "sucesso": True,
         "id": nova["id"],
         "mensagem": f"Encomenda #{nova['id']} criada com sucesso!",
+        "avisos": _avisos_mapping(encomenda.produtos),
     })
 
 
@@ -70,6 +84,7 @@ async def editar_encomenda(encomenda_id: int, encomenda: EncomendaRequest):
         "sucesso": True,
         "id": atualizada["id"],
         "mensagem": f"Encomenda #{atualizada['id']} atualizada com sucesso!",
+        "avisos": _avisos_mapping(encomenda.produtos),
     })
 
 

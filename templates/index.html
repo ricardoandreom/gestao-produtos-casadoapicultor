@@ -49,6 +49,7 @@
     </div>
     <hr class="divider"/>
     <button class="btn-submit" id="btn-submit" onclick="submeterEncomenda()">Gerar Encomenda</button>
+    <div id="avisos-mapping" class="avisos-mapping" style="display:none;"></div>
   </div>
 
   <!-- HISTORICO -->
@@ -379,6 +380,11 @@
 
 <div id="toast"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="/static/js/index.js"></script>
+<script src="/static/js/ui.js"></script>
+<script src="/static/js/graficos.js"></script>
+<script src="/static/js/historico.js"></script>
+<script src="/static/js/form.js"></script>
+<script src="/static/js/modal-editar.js"></script>
+<script>adicionarProduto(); carregarHistorico();</script>
 </body>
 </html>

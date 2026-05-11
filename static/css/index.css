@@ -57,6 +57,18 @@
     #toast.error { background: var(--danger); color: #fff; }
     #toast.show { transform: translateX(-50%) translateY(0); }
 
+    /* AVISOS MAPPING */
+    .avisos-mapping { position: relative; background: rgba(200,120,0,0.12); border: 1px solid rgba(200,120,0,0.45); border-radius: var(--radius); padding: 14px 40px 14px 14px; font-size: 13px; }
+    .avisos-mapping-header { font-weight: 700; color: #e8943a; margin-bottom: 8px; font-size: 12px; letter-spacing: 0.2px; text-transform: uppercase; }
+    .avisos-mapping-lista { list-style: none; display: flex; flex-direction: column; gap: 5px; padding: 0; }
+    .avisos-mapping-lista li { color: var(--text); font-size: 12px; padding-left: 12px; position: relative; }
+    .avisos-mapping-lista li::before { content: '•'; position: absolute; left: 0; color: #e8943a; }
+    .avisos-mapping-footer { margin-top: 10px; font-size: 11px; color: var(--muted); }
+    .avisos-mapping-footer a { color: var(--accent); text-decoration: none; }
+    .avisos-mapping-footer a:hover { text-decoration: underline; }
+    .avisos-mapping-fechar { position: absolute; top: 10px; right: 10px; background: none; border: none; color: var(--muted); font-size: 14px; cursor: pointer; line-height: 1; padding: 2px 4px; transition: color 0.15s; }
+    .avisos-mapping-fechar:hover { color: var(--text); }
+
     /* HISTORICO PANEL */
     .panel-historico { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
     .historico-top { flex-shrink: 0; padding: 28px 36px 0; }

@@ -104,3 +104,30 @@ def apagar(ref_interna: str) -> bool:
     df = df[~mask].reset_index(drop=True)
     _gravar_df(df)
     return True
+
+
+def verificar_produtos(nomes: list) -> dict:
+    """Verifica se os produtos existem no mapping e têm qt_palete definida.
+
+    Devolve:
+      sem_mapeamento: nomes não encontrados no mapping
+      sem_qt_palete:  nomes encontrados mas sem qt_palete_AM_FR preenchida
+    """
+    df = _carregar_df()
+    mapeados = {
+        row["nome_produto"].strip().upper(): row["qt_palete_AM_FR"].strip()
+        for _, row in df.iterrows()
+        if row["nome_produto"].strip()
+    }
+
+    sem_mapeamento = []
+    sem_qt_palete = []
+
+    for nome in nomes:
+        nome_upper = nome.strip().upper()
+        if nome_upper not in mapeados:
+            sem_mapeamento.append(nome)
+        elif not mapeados[nome_upper]:
+            sem_qt_palete.append(nome)
+
+    return {"sem_mapeamento": sem_mapeamento, "sem_qt_palete": sem_qt_palete}
