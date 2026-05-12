@@ -208,6 +208,9 @@ async function guardarProduto() {
 
   if (!nome) { toast('Preenche o nome do produto.', true); return; }
   if (!ref)  { toast('Preenche a referência interna.', true); return; }
+  if (qt && !/^\d+(\/\d+)?$/.test(qt)) {
+    toast('Qt. Palete AM/FR deve ter o formato NUM/NUM (ex: 20/30).', true); return;
+  }
 
   const btn = document.getElementById('btn-save');
   btn.disabled = true; btn.textContent = 'A guardar…';

@@ -67,7 +67,7 @@ gestao-produtos-casadoapicultor/
 │
 ├── app/                         # Lógica do servidor (backend)
 │   ├── config.py                # Caminhos e constantes centralizados
-│   ├── models.py                # Definição dos dados recebidos pela API
+│   ├── models.py                # Modelos Pydantic — validação dos dados recebidos pela API
 │   ├── routes/                  # Endpoints da API
 │   │   ├── encomendas.py        # Criar, editar, apagar, listar encomendas
 │   │   ├── produtos.py          # Gerir o mapeamento de produtos
@@ -109,7 +109,8 @@ gestao-produtos-casadoapicultor/
 │   ├── historico.json           # Base de dados das encomendas
 │   ├── products_mapping.xlsx    # Catálogo de produtos e quantidades de palete
 │   ├── historico_encomendas.xlsx# Exportação Excel do histórico
-│   └── doc_templates/           # Templates Word base para geração de documentos
+│   ├── doc_templates/           # Templates Word base para geração de documentos
+│   └── backups/                 # Cópias diárias automáticas do historico.json
 │
 ├── encomendas_docs/             # Documentos Word gerados
 │   ├── maquinacao/
@@ -136,6 +137,9 @@ gestao-produtos-casadoapicultor/
 ### `data/historico.json`
 Guarda todas as encomendas registadas. É a "base de dados" da aplicação. Não deve ser apagado.
 
+### `data/backups/`
+A aplicação cria automaticamente uma cópia do `historico.json` nesta pasta sempre que arranca, com o nome `historico_YYYY-MM-DD.json`. Apenas uma cópia por dia é guardada.
+
 ### `data/products_mapping.xlsx`
 Catálogo de produtos. Tem de estar preenchido corretamente para que os documentos Word sejam gerados com as quantidades certas. Colunas esperadas:
 
@@ -144,7 +148,7 @@ Catálogo de produtos. Tem de estar preenchido corretamente para que os document
 | `nome_produto` | Nome do produto (usado para fazer a correspondência com o que é digitado na encomenda) |
 | `ref_interna` | Referência interna (identificador único) |
 | `categoria_produto` | Categoria do produto |
-| `qt_palete_AM_FR` | Quantidade por palete no formato `AM/FR` (ex: `20/30`) |
+| `qt_palete_AM_FR` | Quantidade por palete no formato `NUM/NUM` (ex: `20/30`) — validado tanto no frontend como na API |
 | `notas` | Notas adicionais que aparecem nos documentos |
 
 ### `data/doc_templates/`

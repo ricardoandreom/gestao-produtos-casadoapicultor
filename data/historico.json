@@ -1,0 +1,252 @@
+[
+  {
+    "id": 19,
+    "data": "26/04/2026",
+    "hora": "21:43",
+    "cliente": "Ricardo",
+    "cliente_tipo": "AM",
+    "produtos": [
+      {
+        "nome": "NINHO DT S/QUADROS ECONOMICO",
+        "quantidade": 10,
+        "notas": ""
+      },
+      {
+        "nome": "ALÇA DT S/QUADROS ECO BL",
+        "quantidade": 23,
+        "notas": "vamos"
+      }
+    ],
+    "doc_maquinacao": "C:\\Users\\Admin\\Desktop\\colmeias\\encomendas_docs\\maquinacao\\maquinacao_0019_26042026.docx",
+    "doc_etiquetas": "C:\\Users\\Admin\\Desktop\\colmeias\\encomendas_docs\\etiquetas\\etiquetas_0019_26042026.docx",
+    "doc_acabamento": "C:\\Users\\Admin\\Desktop\\colmeias\\encomendas_docs\\acabamentos\\acabamento_0019_26042026.docx"
+  },
+  {
+    "id": 30,
+    "data": "04/05/2026",
+    "hora": "23:28",
+    "cliente": "Ricardo",
+    "cliente_tipo": "AM",
+    "produtos": [
+      {
+        "nome": "ALIMENTADOR REVERSIVEL C/PARAFINA",
+        "quantidade": 1000,
+        "notas": ""
+      },
+      {
+        "nome": "ALÇA DT 12 S/QUADROS ECO",
+        "quantidade": 199,
+        "notas": ""
+      }
+    ],
+    "doc_maquinacao": "encomendas_docs/maquinacao/maquinacao_0030_04052026.docx",
+    "doc_etiquetas": "encomendas_docs/etiquetas/etiquetas_0030_04052026.docx",
+    "doc_acabamento": "encomendas_docs/acabamentos/acabamento_0030_04052026.docx"
+  },
+  {
+    "id": 31,
+    "data": "05/05/2026",
+    "hora": "00:38",
+    "cliente": "Ricardo",
+    "cliente_tipo": "AM",
+    "produtos": [
+      {
+        "nome": "ALÇA DT 12 S/QUADROS ECO",
+        "quantidade": 679,
+        "notas": ""
+      },
+      {
+        "nome": "ALIMENTADOR REVERSIVEL C/PARAFINA",
+        "quantidade": 2,
+        "notas": ""
+      }
+    ],
+    "doc_maquinacao": "encomendas_docs/maquinacao/maquinacao_0031_05052026.docx",
+    "doc_etiquetas": "encomendas_docs/etiquetas/etiquetas_0031_05052026.docx",
+    "doc_acabamento": "encomendas_docs/acabamentos/acabamento_0031_05052026.docx"
+  },
+  {
+    "id": 32,
+    "data": "05/05/2026",
+    "hora": "00:41",
+    "cliente": "Ricardo",
+    "cliente_tipo": "AM",
+    "produtos": [
+      {
+        "nome": "ALÇA DT 12 S/QUADROS ECO",
+        "quantidade": 2,
+        "notas": "vamos"
+      },
+      {
+        "nome": "ALIMENTADOR REVERSIVEL C/PARAFINA",
+        "quantidade": 8,
+        "notas": "lets go"
+      },
+      {
+        "nome": "Ninho",
+        "quantidade": 100,
+        "notas": ""
+      },
+      {
+        "nome": "Pranchetas",
+        "quantidade": 5,
+        "notas": ""
+      },
+      {
+        "nome": "teste",
+        "quantidade": 5,
+        "notas": "notas test"
+      }
+    ],
+    "doc_maquinacao": "encomendas_docs/maquinacao/maquinacao_0032_05052026.docx",
+    "doc_etiquetas": "encomendas_docs/etiquetas/etiquetas_0032_05052026.docx",
+    "doc_acabamento": "encomendas_docs/acabamentos/acabamento_0032_05052026.docx"
+  },
+  {
+    "id": 33,
+    "data": "05/05/2026",
+    "hora": "14:13",
+    "cliente": "Diogo",
+    "cliente_tipo": "AM",
+    "produtos": [
+      {
+        "nome": "ALIMENTADOR REVERSIVEL C/PARAFINA",
+        "quantidade": 200,
+        "notas": ""
+      },
+      {
+        "nome": "ALÇA DT 12 S/QUADROS ECO",
+        "quantidade": 105,
+        "notas": ""
+      }
+    ],
+    "doc_maquinacao": "encomendas_docs/maquinacao/maquinacao_0033_05052026.docx",
+    "doc_etiquetas": "encomendas_docs/etiquetas/etiquetas_0033_05052026.docx",
+    "doc_acabamento": "encomendas_docs/acabamentos/acabamento_0033_05052026.docx"
+  },
+  {
+    "id": 35,
+    "data": "11/05/2026",
+    "hora": "23:13",
+    "cliente": "Ricardo",
+    "cliente_tipo": "AM",
+    "produtos": [
+      {
+        "nome": "ALIMENTADOR REVERSIVEL C/PARAFINA",
+        "quantidade": 10,
+        "notas": "vamos"
+      }
+    ],
+    "doc_maquinacao": "encomendas_docs/maquinacao/maquinacao_0035_11052026.docx",
+    "doc_etiquetas": "encomendas_docs/etiquetas/etiquetas_0035_11052026.docx",
+    "doc_acabamento": "encomendas_docs/acabamentos/acabamento_0035_11052026.docx"
+  },
+  {
+    "id": 36,
+    "data": "11/05/2026",
+    "hora": "23:14",
+    "cliente": "Ricardo",
+    "cliente_tipo": "AM",
+    "produtos": [
+      {
+        "nome": "ALIMENTADOR REVERSIVEL C/PARAFINA",
+        "quantidade": 10,
+        "notas": ""
+      },
+      {
+        "nome": "gyeudiopo",
+        "quantidade": 4,
+        "notas": "vamos"
+      },
+      {
+        "nome": "dfeycuioip",
+        "quantidade": 2,
+        "notas": "efdef"
+      }
+    ],
+    "doc_maquinacao": "encomendas_docs/maquinacao/maquinacao_0036_11052026.docx",
+    "doc_etiquetas": "encomendas_docs/etiquetas/etiquetas_0036_11052026.docx",
+    "doc_acabamento": "encomendas_docs/acabamentos/acabamento_0036_11052026.docx"
+  },
+  {
+    "id": 37,
+    "data": "12/05/2026",
+    "hora": "00:06",
+    "cliente": "RICARDO",
+    "cliente_tipo": "FR",
+    "produtos": [
+      {
+        "nome": "RTYGHUJfrfg",
+        "quantidade": 10,
+        "notas": ""
+      },
+      {
+        "nome": "ALIMENTADOR REVERSIVEL C/PARAFINA",
+        "quantidade": 2,
+        "notas": ""
+      }
+    ],
+    "doc_maquinacao": "encomendas_docs/maquinacao/maquinacao_0037_12052026.docx",
+    "doc_etiquetas": "encomendas_docs/etiquetas/etiquetas_0037_12052026.docx",
+    "doc_acabamento": "encomendas_docs/acabamentos/acabamento_0037_12052026.docx"
+  },
+  {
+    "id": 39,
+    "data": "12/05/2026",
+    "hora": "23:15",
+    "cliente": "Ricardo",
+    "cliente_tipo": "AM",
+    "produtos": [
+      {
+        "nome": "ALIMENTADOR REVERSIVEL C/PARAFINA",
+        "quantidade": 400,
+        "notas": "lets go"
+      },
+      {
+        "nome": "ALÇA DT 12 S/QUADROS ECO",
+        "quantidade": 70,
+        "notas": "xxx"
+      },
+      {
+        "nome": "ALÇA DT S/QUADROS ECO BL",
+        "quantidade": 100,
+        "notas": "vamos"
+      }
+    ],
+    "doc_maquinacao": "encomendas_docs/maquinacao/maquinacao_0039_12052026.docx",
+    "doc_etiquetas": "encomendas_docs/etiquetas/etiquetas_0039_12052026.docx",
+    "doc_acabamento": "encomendas_docs/acabamentos/acabamento_0039_12052026.docx"
+  },
+  {
+    "id": 40,
+    "data": "12/05/2026",
+    "hora": "23:54",
+    "cliente": "Joao",
+    "cliente_tipo": "FR",
+    "produtos": [
+      {
+        "nome": "ALIMENTADOR REVERSIVEL C/PARAFINA",
+        "quantidade": 400,
+        "notas": "hfjfj"
+      },
+      {
+        "nome": "ALÇA DT 12 S/QUADROS ECO",
+        "quantidade": 100,
+        "notas": "fjdjjd"
+      },
+      {
+        "nome": "ALÇA DT S/QUADROS ECO BL",
+        "quantidade": 200,
+        "notas": "fjdjd"
+      },
+      {
+        "nome": "dcvdv",
+        "quantidade": 5,
+        "notas": ""
+      }
+    ],
+    "doc_maquinacao": "encomendas_docs/maquinacao/maquinacao_0040_12052026.docx",
+    "doc_etiquetas": "encomendas_docs/etiquetas/etiquetas_0040_12052026.docx",
+    "doc_acabamento": "encomendas_docs/acabamentos/acabamento_0040_12052026.docx"
+  }
+]

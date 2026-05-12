@@ -73,16 +73,13 @@ $RECYCLE.BIN/
 # Específico deste projeto
 # =============================================================================
 
-# Dados (cada instalação tem os seus)
-data/historico.json
-data/historico_encomendas.xlsx
-data/products_mapping.xlsx
-data/products_mapping.XLSX
-
 # Documentos Word gerados (são output, não código)
 encomendas_docs/
 
-# Backups criados pelos scripts utilitários
+# Backups automáticos do histórico (gerados no arranque do servidor)
+data/backups/
+
+# Backups manuais
 data/*.bak
 data/*.bak2
 *.bak

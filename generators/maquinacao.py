@@ -8,134 +8,26 @@ Em seguida:
   1. Substitui o número de ordem na célula (0,2) do header
   2. Remove apenas os parágrafos do body (a tabela de datas fica intacta)
   3. Reconstrói os parágrafos com os dados da encomenda
-
-Valores medidos directamente do template (XML):
-  - Título:   Arial Black 38 pt, bold, underline, centrado, ind=-993 twips
-  - Categoria: Arial Black 26 pt, bold, underline, ind=-993 twips, sa=0
-  - Produto:   Arial Black 26 pt, ind=-993 twips, sa=6 pt
-  - Notas:     Arial Black 26 pt, ind=-993 twips, sa=6 pt  (prefixo "- ")
 """
 
 from pathlib import Path
 
 from docx import Document
-from docx.shared import Pt
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.oxml.ns import qn
-from docx.oxml import OxmlElement
 
-from ._common import set_font, carregar_mapping_completo
+from ._common import (
+    set_font, carregar_mapping_completo,
+    _body_para, _update_header_order_num,
+    _make_date_table_inline, _clear_body_paragraphs,
+)
 
 
 TEMPLATE_PATH = Path(__file__).parent.parent / "data" / "doc_templates" / "maq_temp.docx"
-_W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
-
-# Indentação negativa usada em todos os parágrafos do body (twips)
-_INDENT = -993
 
 
 # ---------------------------------------------------------------------------
-# Helpers internos
+# Lógica específica da maquinação
 # ---------------------------------------------------------------------------
-
-def _set_left_indent_twips(p, twips: int):
-    """Define w:ind/@w:left directamente em twips (evita conversão EMU)."""
-    pPr = p._p.get_or_add_pPr()
-    # Remove qualquer <w:ind> existente para evitar duplicados
-    for old in pPr.findall(f"{{{_W}}}ind"):
-        pPr.remove(old)
-    ind = OxmlElement("w:ind")
-    ind.set(qn("w:left"), str(twips))
-    pPr.append(ind)
-
-
-def _body_para(doc, text="", bold=False, underline=False, size_pt=26,
-               align=None, space_after_pt=0, space_before_pt=0):
-    """Adiciona um parágrafo ao body com as propriedades do template."""
-    p = doc.add_paragraph()
-
-    if align is not None:
-        p.alignment = align
-    p.paragraph_format.space_before = Pt(space_before_pt)
-    p.paragraph_format.space_after  = Pt(space_after_pt)
-    _set_left_indent_twips(p, _INDENT)
-
-    if text:
-        run = p.add_run(text)
-        if underline:
-            run.underline = True
-        set_font(run, font_name="Arial Black", size_pt=size_pt, bold=bold)
-
-    return p
-
-
-# ---------------------------------------------------------------------------
-# Actualização do número de ordem no header
-# ---------------------------------------------------------------------------
-
-def _update_header_order_num(doc, encomenda):
-    """Substitui o texto do número de ordem na célula (0,2) do header."""
-    _day, _month, year = encomenda["data"].split("/")
-    order_num = f" {encomenda['id']:03d}/{year[2:]} {encomenda['cliente_tipo']}"
-
-    header = doc.sections[0].header
-    cell   = header.tables[0].cell(0, 2)
-    para   = cell.paragraphs[0]
-
-    # Apaga todos os runs existentes
-    for run in list(para.runs):
-        run._r.getparent().remove(run._r)
-
-    # Insere o novo número numa só run
-    run = para.add_run(order_num)
-    run.bold = True
-    set_font(run, font_name="Arial", size_pt=20, bold=True)
-
-
-# ---------------------------------------------------------------------------
-# Limpeza e reconstrução do body
-# ---------------------------------------------------------------------------
-
-def _make_date_table_inline(doc):
-    """Converte a tabela flutuante de datas em tabela inline alinhada à direita.
-
-    A tabela no body do template tem tblpPr (floating/wrap), o que faz o Word
-    restringir a largura de texto de TODOS os parágrafos adjacentes mesmo que
-    estejam abaixo da tabela. Removendo tblpPr e tblOverlap, definindo largura
-    auto-fit e jc=right, a tabela fica inline à direita e o título tem largura
-    total da página.
-    """
-    body = doc.element.body
-    for tbl in body.findall(f"{{{_W}}}tbl"):
-        tblPr = tbl.find(f"{{{_W}}}tblPr")
-        if tblPr is None:
-            continue
-        # Remove floating positioning
-        for tag in (f"{{{_W}}}tblpPr", f"{{{_W}}}tblOverlap"):
-            el = tblPr.find(tag)
-            if el is not None:
-                tblPr.remove(el)
-        # Set table width to auto-fit content (so jc=right actually moves it)
-        tblW = tblPr.find(f"{{{_W}}}tblW")
-        if tblW is None:
-            tblW = OxmlElement("w:tblW")
-            tblPr.insert(0, tblW)
-        tblW.set(qn("w:w"), "0")
-        tblW.set(qn("w:type"), "auto")
-        # Right-align the table on the page
-        jc = tblPr.find(f"{{{_W}}}jc")
-        if jc is None:
-            jc = OxmlElement("w:jc")
-            tblPr.append(jc)
-        jc.set(qn("w:val"), "right")
-
-
-def _clear_body_paragraphs(doc):
-    """Remove todos os parágrafos do body, preservando tabelas e sectPr."""
-    body = doc.element.body
-    for child in [c for c in body if c.tag == f"{{{_W}}}p"]:
-        body.remove(child)
-
 
 def _agrupar_por_categoria(produtos, mapping):
     """Agrupa produtos por categoria, preservando a ordem de entrada."""
@@ -153,10 +45,8 @@ def _add_body(doc, encomenda, mapping):
     """Reconstrói os parágrafos do body com os dados da encomenda."""
     grupos = _agrupar_por_categoria(encomenda["produtos"], mapping)
 
-    # Parágrafo vazio antes do título (espaçamento acima do título)
     _body_para(doc, "")
 
-    # Título "FAZER – PRODUÇÃO {tipo}"
     _body_para(
         doc,
         f"FAZER – PRODUÇÃO {encomenda['cliente_tipo']}",
@@ -164,26 +54,20 @@ def _add_body(doc, encomenda, mapping):
         align=WD_ALIGN_PARAGRAPH.LEFT,
     )
 
-    # Categorias e produtos
     first = True
     for categoria, itens in grupos.items():
-        # Linha em branco entre categorias
         if not first:
             _body_para(doc, "", space_after_pt=6)
         first = False
 
-        # Cabeçalho da categoria (sublinhado)
         _body_para(doc, categoria, bold=True, underline=True, size_pt=26)
 
         for produto, notas_map in itens:
-            # Linha do produto: "{qty} – {nome}"
             _body_para(
                 doc,
                 f"{produto['quantidade']} – {produto['nome']}",
                 size_pt=26, space_after_pt=6,
             )
-
-            # Notas: as do utilizador sobrepõem as do mapping
             notas = produto.get("notas", "").strip() or notas_map
             if notas:
                 _body_para(doc, f"- {notas}", size_pt=26, space_after_pt=6)
