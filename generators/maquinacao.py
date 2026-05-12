@@ -97,13 +97,10 @@ def _update_header_order_num(doc, encomenda):
 # ---------------------------------------------------------------------------
 
 def _make_date_table_inline(doc):
-    """Converte a tabela flutuante de datas em tabela inline alinhada à direita.
+    """Converte a tabela flutuante de datas em tabela inline alinhada com o cabeçalho.
 
-    A tabela no body do template tem tblpPr (floating/wrap), o que faz o Word
-    restringir a largura de texto de TODOS os parágrafos adjacentes mesmo que
-    estejam abaixo da tabela. Removendo tblpPr e tblOverlap, definindo largura
-    auto-fit e jc=right, a tabela fica inline à direita e o título tem largura
-    total da página.
+    Header: tblW=10632, tblInd=-1000 → borda direita a 9632 twips do texto.
+    Dates table: tblW=4819 → tblInd = 9632 - 4819 = 4813 para alinhar bordas direitas.
     """
     body = doc.element.body
     for tbl in body.findall(f"{{{_W}}}tbl"):
@@ -115,19 +112,26 @@ def _make_date_table_inline(doc):
             el = tblPr.find(tag)
             if el is not None:
                 tblPr.remove(el)
-        # Set table width to auto-fit content (so jc=right actually moves it)
+        # Keep original width (4819 dxa)
         tblW = tblPr.find(f"{{{_W}}}tblW")
         if tblW is None:
             tblW = OxmlElement("w:tblW")
             tblPr.insert(0, tblW)
-        tblW.set(qn("w:w"), "0")
-        tblW.set(qn("w:type"), "auto")
-        # Right-align the table on the page
+        tblW.set(qn("w:w"), "4819")
+        tblW.set(qn("w:type"), "dxa")
+        # Shift left edge so right edge aligns with header's right border
+        tblInd = tblPr.find(f"{{{_W}}}tblInd")
+        if tblInd is None:
+            tblInd = OxmlElement("w:tblInd")
+            tblPr.append(tblInd)
+        tblInd.set(qn("w:w"), "4813")
+        tblInd.set(qn("w:type"), "dxa")
+        # Left-aligned so tblInd positions correctly
         jc = tblPr.find(f"{{{_W}}}jc")
         if jc is None:
             jc = OxmlElement("w:jc")
             tblPr.append(jc)
-        jc.set(qn("w:val"), "right")
+        jc.set(qn("w:val"), "left")
 
 
 def _clear_body_paragraphs(doc):

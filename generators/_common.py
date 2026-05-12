@@ -111,6 +111,31 @@ def carregar_mapping_completo():
     return mapping
 
 
+def carregar_mapping_acabamento():
+    """Carrega o products_mapping.xlsx e devolve um dict
+    {nome_produto_em_uppercase: {ref_interna, qt_palete_AM_FR, notas, nome_produto}}."""
+    import pandas as pd
+
+    mapping_path = Path(__file__).parent.parent / "data" / "products_mapping.xlsx"
+    if not mapping_path.exists():
+        return {}
+
+    df = pd.read_excel(str(mapping_path), dtype=str).fillna("")
+    df.columns = [c.strip() for c in df.columns]
+
+    mapping = {}
+    for _, row in df.iterrows():
+        nome = str(row.get("nome_produto", "")).strip().upper()
+        if nome:
+            mapping[nome] = {
+                "nome_produto":   str(row.get("nome_produto", "")).strip(),
+                "ref_interna":    str(row.get("ref_interna", "")).strip(),
+                "qt_palete_AM_FR": str(row.get("qt_palete_AM_FR", "")).strip(),
+                "notas":          str(row.get("notas", "")).strip(),
+            }
+    return mapping
+
+
 def qt_palete(qt_str: str, cliente_tipo: str) -> str:
     """Da string '20/30' (AM/FR), devolve a parte que corresponde ao cliente_tipo.
 
