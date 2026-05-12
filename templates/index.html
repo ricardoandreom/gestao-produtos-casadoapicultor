@@ -44,6 +44,7 @@
     <div>
       <div class="section-label">Produtos</div>
       <div class="col-labels"><span>Produto</span><span>Qtd.</span></div>
+      <datalist id="produtos-datalist"></datalist>
       <div class="produtos-lista" id="produtos-lista"></div>
       <button class="btn-add-produto" onclick="adicionarProduto()" style="margin-top:10px;">+ Adicionar produto</button>
     </div>
@@ -385,6 +386,6 @@
 <script src="/static/js/historico.js"></script>
 <script src="/static/js/form.js"></script>
 <script src="/static/js/modal-editar.js"></script>
-<script>adicionarProduto(); carregarHistorico();</script>
+<script>adicionarProduto(); carregarHistorico(); carregarProdutosDatalist();</script>
 </body>
 </html>

@@ -7,13 +7,28 @@ function selecionarTipo(tipo) {
   document.querySelectorAll('.tipo-btn').forEach(b => b.classList.toggle('active', b.dataset.tipo === tipo));
 }
 
+async function carregarProdutosDatalist() {
+  try {
+    const res = await fetch('/api/produtos');
+    const produtos = await res.json();
+    const dl = document.getElementById('produtos-datalist');
+    if (!dl) return;
+    dl.innerHTML = '';
+    produtos.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.nome_produto;
+      dl.appendChild(opt);
+    });
+  } catch (_) {}
+}
+
 function adicionarProduto(nome = '', qty = '', notas = '') {
   const lista = document.getElementById('produtos-lista');
   const row = document.createElement('div');
   row.className = 'produto-row';
   row.innerHTML = `
     <div class="produto-wrap">
-      <input type="text" placeholder="Nome do produto" value="${nome}" class="prod-nome"/>
+      <input type="text" placeholder="Nome do produto" value="${nome}" class="prod-nome" list="produtos-datalist"/>
       <textarea class="prod-notas" placeholder="Notas (opcional)...">${notas}</textarea>
     </div>
     <input type="number" placeholder="Qtd" min="1" value="${qty}" class="prod-qty" style="align-self:start;"/>

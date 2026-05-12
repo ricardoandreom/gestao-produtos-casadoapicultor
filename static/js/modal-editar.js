@@ -33,7 +33,7 @@ function meAdicionarProduto(p) {
   const row = document.createElement('div');
   row.className = 'modal-produto-row';
   row.innerHTML = `
-    <input type="text" placeholder="Nome do produto" class="me-prod-nome" value="${(p?.nome || '').replace(/"/g, '&quot;')}" />
+    <input type="text" placeholder="Nome do produto" class="me-prod-nome" value="${(p?.nome || '').replace(/"/g, '&quot;')}" list="produtos-datalist"/>
     <input type="number" placeholder="Qt" min="1" class="me-prod-qt" value="${p?.quantidade || 1}" />
     <input type="text" placeholder="Notas (opcional)" class="me-prod-notas" value="${(p?.notas || '').replace(/"/g, '&quot;')}" />
     <button class="btn-remove" onclick="this.parentElement.remove()" title="Remover">✕</button>
