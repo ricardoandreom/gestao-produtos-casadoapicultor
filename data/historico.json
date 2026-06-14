@@ -89,7 +89,7 @@
       },
       {
         "nome": "Pranchetas",
-        "quantidade": 5,
+        "quantidade": 10,
         "notas": ""
       },
       {
@@ -98,9 +98,9 @@
         "notas": "notas test"
       }
     ],
-    "doc_maquinacao": "encomendas_docs/maquinacao/maquinacao_0032_05052026.docx",
-    "doc_etiquetas": "encomendas_docs/etiquetas/etiquetas_0032_05052026.docx",
-    "doc_acabamento": "encomendas_docs/acabamentos/acabamento_0032_05052026.docx"
+    "doc_maquinacao": "encomendas_docs/maquinacao/maquinacao_0032_14062026.docx",
+    "doc_etiquetas": "encomendas_docs/etiquetas/etiquetas_0032_14062026.docx",
+    "doc_acabamento": "encomendas_docs/acabamentos/acabamento_0032_14062026.docx"
   },
   {
     "id": 33,
@@ -248,5 +248,54 @@
     "doc_maquinacao": "encomendas_docs/maquinacao/maquinacao_0040_12052026.docx",
     "doc_etiquetas": "encomendas_docs/etiquetas/etiquetas_0040_12052026.docx",
     "doc_acabamento": "encomendas_docs/acabamentos/acabamento_0040_12052026.docx"
+  },
+  {
+    "id": 41,
+    "data": "14/06/2026",
+    "hora": "18:02",
+    "cliente": "Diogo",
+    "cliente_tipo": "FR",
+    "produtos": [
+      {
+        "nome": "ALIMENTADOR REVERSIVEL C/PARAFINA",
+        "quantidade": 400,
+        "notas": "rgerg"
+      },
+      {
+        "nome": "ALÇA DT 12 S/QUADROS ECO",
+        "quantidade": 100,
+        "notas": "r4f"
+      },
+      {
+        "nome": "ggg",
+        "quantidade": 60,
+        "notas": "gg"
+      }
+    ],
+    "doc_maquinacao": "encomendas_docs/maquinacao/maquinacao_0041_14062026.docx",
+    "doc_etiquetas": "encomendas_docs/etiquetas/etiquetas_0041_14062026.docx",
+    "doc_acabamento": "encomendas_docs/acabamentos/acabamento_0041_14062026.docx"
+  },
+  {
+    "id": 42,
+    "data": "14/06/2026",
+    "hora": "18:31",
+    "cliente": "diogo",
+    "cliente_tipo": "FR",
+    "produtos": [
+      {
+        "nome": "ALIMENTADOR REVERSIVEL C/PARAFINA",
+        "quantidade": 400,
+        "notas": ""
+      },
+      {
+        "nome": "ALÇA DT 12 S/QUADROS ECO",
+        "quantidade": 300,
+        "notas": "yuiuoujoi"
+      }
+    ],
+    "doc_maquinacao": "encomendas_docs/maquinacao/maquinacao_0042_14062026.docx",
+    "doc_etiquetas": "encomendas_docs/etiquetas/etiquetas_0042_14062026.docx",
+    "doc_acabamento": "encomendas_docs/acabamentos/acabamento_0042_14062026.docx"
   }
 ]
