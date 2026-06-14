@@ -79,6 +79,7 @@ def _add_body(doc, encomenda, mapping):
     for i, item in enumerate(items):
         if i > 0:
             _body_para(doc, "", space_after_pt=6)
+            _body_para(doc, "", space_after_pt=6)
 
         produto    = item["produto"]
         info       = item["info"]

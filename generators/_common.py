@@ -175,7 +175,9 @@ def _body_para(doc, text="", bold=False, underline=False, size_pt=26,
 def _update_header_order_num(doc, encomenda):
     """Substitui o número de ordem na célula (0,2) do header."""
     _day, _month, year = encomenda["data"].split("/")
-    order_num = f" {encomenda['id']:03d}/{year[2:]} {encomenda['cliente_tipo']}"
+    numero_tipo = encomenda.get("_numero_por_tipo")
+    sufixo_tipo = f" {numero_tipo:02d}" if numero_tipo is not None else ""
+    order_num = f" {encomenda['id']:03d}/{year[2:]} {encomenda['cliente_tipo']}{sufixo_tipo}"
 
     header = doc.sections[0].header
     cell   = header.tables[0].cell(0, 2)

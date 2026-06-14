@@ -51,15 +51,27 @@ def encontrar(historico: list, encomenda_id: int) -> Optional[dict]:
     return next((e for e in historico if e["id"] == encomenda_id), None)
 
 
+def numero_por_cliente_tipo(historico: list, encomenda: dict) -> int:
+    """Posição (1-indexed) da encomenda entre as do mesmo cliente_tipo, ordenadas por id."""
+    tipo = encomenda["cliente_tipo"]
+    eid  = encomenda["id"]
+    return sum(1 for e in historico if e["cliente_tipo"] == tipo and e["id"] <= eid)
+
+
 def criar(cliente: str, cliente_tipo: str, produtos: list) -> dict:
     """Cria uma encomenda nova: gera os 3 documentos Word e persiste."""
     historico = carregar()
     novo_id = proximo_id(historico)
 
     nova = construir_nova_encomenda(novo_id, cliente, cliente_tipo, produtos)
-    gerar_documentos(nova)
-
     historico.append(nova)
+
+    nova["_numero_por_tipo"] = numero_por_cliente_tipo(historico, nova)
+    try:
+        gerar_documentos(nova)
+    finally:
+        nova.pop("_numero_por_tipo", None)
+
     guardar(historico)
     return nova
 
@@ -93,7 +105,11 @@ def editar(encomenda_id: int, cliente: str, cliente_tipo: str, produtos: list) -
     enc["doc_acabamento"] = ""
 
     # Gerar Word novos (atualiza os campos doc_*)
-    gerar_documentos(enc)
+    enc["_numero_por_tipo"] = numero_por_cliente_tipo(historico, enc)
+    try:
+        gerar_documentos(enc)
+    finally:
+        enc.pop("_numero_por_tipo", None)
 
     guardar(historico)
     return enc
